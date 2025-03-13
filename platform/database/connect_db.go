@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"lot/config"
+	"lot/pkg/entity"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -23,5 +24,6 @@ func ConnectDb() *gorm.DB {
 	} else {
 		fmt.Println("Connected to the db")
 	}
+	db.AutoMigrate(entity.Role{}, entity.User{}, entity.RefreshToken{})
 	return db
 }
