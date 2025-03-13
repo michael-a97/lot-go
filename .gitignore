@@ -1,3 +1,6 @@
 air.toml
 tmp
 .env
+.idea
+.vscode
+__debug*
