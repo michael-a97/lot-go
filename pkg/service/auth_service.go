@@ -5,14 +5,13 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 	dto "lot/api/dto/auth"
 	"lot/config"
 	"lot/pkg/entity"
 	"lot/pkg/repository"
 	"time"
-
-	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -23,11 +22,13 @@ const (
 type AuthService interface {
 	SignIn(request dto.LoginRequest) (*dto.AuthenticationResponse, error)
 	RefreshToken(request dto.TokenRefreshRequest) (*dto.AuthenticationResponse, error)
+	VerifyPhoneNumberAuthenticationToken(token string) (bool, error)
 }
 
 type authService struct {
-	userRepository repository.UserRepository
-	authRepository repository.AuthRepository
+	userRepository  repository.UserRepository
+	authRepository  repository.AuthRepository
+	smsTokenVerfier SmsTokenVerifier
 }
 
 func (a authService) SignIn(request dto.LoginRequest) (*dto.AuthenticationResponse, error) {
@@ -132,16 +133,29 @@ func (a authService) RefreshToken(request dto.TokenRefreshRequest) (*dto.Authent
 	return &response, nil
 }
 
+func (a authService) VerifyPhoneNumberAuthenticationToken(token string) (bool, error) {
+	valid, err := a.smsTokenVerfier.IsTokenValid(token)
+	if err != nil {
+		return false, err
+	}
+	return valid, nil
+}
+
 func hashAndEncodeToHex(token string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(token))
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func NewAuthService(authRepository repository.AuthRepository, userRepository repository.UserRepository) AuthService {
+func NewAuthService(
+	authRepository repository.AuthRepository,
+	userRepository repository.UserRepository,
+	smsTokenVerifier SmsTokenVerifier,
+) AuthService {
 	return &authService{
-		userRepository: userRepository,
-		authRepository: authRepository,
+		userRepository:  userRepository,
+		authRepository:  authRepository,
+		smsTokenVerfier: smsTokenVerifier,
 	}
 }
 
