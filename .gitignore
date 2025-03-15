@@ -4,3 +4,4 @@ tmp
 .idea
 .vscode
 __debug*
+platform/firebase/*.json

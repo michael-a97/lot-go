@@ -6,6 +6,10 @@ import (
 	"lot/pkg/service"
 )
 
-func SetupUserRoutes(router fiber.Router, userService service.UserService) {
-	router.Post("/signup", handler.SignUpHandler(userService))
+func SetupUserRoutes(
+	router fiber.Router,
+	userService service.UserService,
+	authService service.AuthService,
+) {
+	router.Post("/signup", handler.SignUpHandler(userService, authService))
 }

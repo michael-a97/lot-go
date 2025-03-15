@@ -18,9 +18,9 @@ func SignInHandler(authService service.AuthService) fiber.Handler {
 		if err := request.Validate(); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(
 				fiber.Map{
-					"status":  "error",
-					"error":   err,
-					"data":    nil,
+					"status": "error",
+					"error":  err,
+					"data":   nil,
 				},
 			)
 		}
@@ -58,9 +58,9 @@ func RefreshTokenHandler(authService service.AuthService) fiber.Handler {
 		if err := request.Validate(); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(
 				fiber.Map{
-					"status":  "error",
-					"error":   err,
-					"data":    nil,
+					"status": "error",
+					"error":  err,
+					"data":   nil,
 				},
 			)
 		}

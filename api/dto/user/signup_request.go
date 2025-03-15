@@ -8,11 +8,12 @@ import (
 )
 
 type SignUpRequest struct {
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Password    string `json:"password"`
-	PhoneNumber string `json:"phone_number"`
-	Role        string `json:"role"`
+	FirstName                    string `json:"first_name"`
+	LastName                     string `json:"last_name"`
+	Password                     string `json:"password"`
+	PhoneNumber                  string `json:"phone_number"`
+	Role                         string `json:"role"`
+	PhoneNumberVerificationToken string `json:"phone_number_verification_token"`
 }
 
 func (request SignUpRequest) Validate() error {
@@ -43,6 +44,10 @@ func (request SignUpRequest) Validate() error {
 					entity.RoleUser, entity.RoleAttendant,
 				),
 			),
+		),
+		validation.Field(
+			&request.PhoneNumberVerificationToken,
+			validation.Required.Error("Phone number verificaiton token is required"),
 		),
 	)
 }
