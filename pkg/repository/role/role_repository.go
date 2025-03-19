@@ -1,16 +1,15 @@
 package repository
 
 import (
-	entity "lot/pkg/entity"
-
 	"gorm.io/gorm"
+	entity "lot/pkg/entity"
+	errors "lot/pkg/errors"
 )
 
 type RoleRepository interface {
 	Save(role entity.Role) error
 	Find() []entity.Role
-	FindUserRoleByName(name string) (entity.Role, error)
-
+	FindUserRoleByName(name string) (*entity.Role, error)
 }
 
 type roleRepository struct {
@@ -31,13 +30,13 @@ func (r roleRepository) Find() []entity.Role {
 	return roles
 }
 
-func (r roleRepository) FindUserRoleByName(name string) (entity.Role, error) {
+func (r roleRepository) FindUserRoleByName(name string) (*entity.Role, error) {
 	var role entity.Role
 	result := r.DB.Where("name = ?", name).First(&role)
 	if result.RowsAffected == 0 {
-		return entity.Role{}, errRecordNotFound
+		return nil, errors.ErrRecordNotFound
 	}
-	return role, nil
+	return &role, nil
 }
 
 func NewRoleRepository(db *gorm.DB) RoleRepository {

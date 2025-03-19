@@ -10,6 +10,7 @@ type authRepository struct {
 	DB *gorm.DB
 }
 
+
 type AuthRepository interface {
 	RevokeAllRefreshTokensForUser(userId uint) error
 	IsValidRefreshToken(token string, userId uint) (bool, error)
@@ -26,7 +27,7 @@ func (a authRepository) SaveRefreshToken(token string, userId uint) error {
 	if result.Error != nil {
 		return result.Error
 	}
-	return nil
+	return nil 
 }
 
 func (a authRepository) RevokeAllRefreshTokensForUser(userId uint) error {

@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"errors"
 	"gorm.io/gorm"
 	"lot/pkg/entity"
+	errors "lot/pkg/errors"
 )
 
 type userRepository struct {
@@ -14,7 +14,7 @@ type UserRepository interface {
 	Save(user entity.User) error
 	Delete(user entity.User) error
 	FindById(id uint) (*entity.User, error)
-	FindByPhoneNumber(phoneNumber string) *entity.User
+	FindByPhoneNumber(phoneNumber string) (*entity.User, error)
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {
@@ -23,14 +23,12 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	}
 }
 
-var errRecordNotFound = errors.New("record not found")
-
 func (u userRepository) FindById(id uint) (*entity.User, error) {
 	var user entity.User
 	result := u.DB.Model(&entity.User{}).Preload("Role").Find(&user, id)
 
 	if result.RowsAffected == 0 {
-		return nil, errRecordNotFound
+		return nil, errors.ErrRecordNotFound
 	}
 	return &user, nil
 }
@@ -51,12 +49,12 @@ func (u userRepository) Delete(user entity.User) error {
 	return nil
 }
 
-func (u userRepository) FindByPhoneNumber(phoneNumber string) *entity.User {
+func (u userRepository) FindByPhoneNumber(phoneNumber string) (*entity.User, error) {
 	var user entity.User
 	result := u.DB.Model(&entity.User{}).Where("phone_number = ?", phoneNumber).Preload("Role").Find(&user)
 	if result.RowsAffected == 0 {
-		return nil
+		return nil, errors.ErrRecordNotFound
 	} else {
-		return &user
+		return &user, nil
 	}
 }

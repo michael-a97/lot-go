@@ -4,19 +4,21 @@ import (
 	"errors"
 	"lot/api/dto/user"
 	entity "lot/pkg/entity"
-	repository "lot/pkg/repository"
+	app_errors "lot/pkg/errors"
+	role "lot/pkg/repository/role"
+	user "lot/pkg/repository/user"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type userService struct {
-	userRepository repository.UserRepository
-	roleRepository repository.RoleRepository
+	userRepository user.UserRepository
+	roleRepository role.RoleRepository
 }
 
 func NewUserService(
-	userRepository repository.UserRepository,
-	roleRepository repository.RoleRepository,
+	userRepository user.UserRepository,
+	roleRepository role.RoleRepository,
 ) UserService {
 	return &userService{
 		userRepository: userRepository,
@@ -35,7 +37,7 @@ func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
 		return nil, errors.New("role not found")
 	}
 
-	if user := u.userRepository.FindByPhoneNumber(request.PhoneNumber); user != nil {
+	if _, err := u.userRepository.FindByPhoneNumber(request.PhoneNumber); err == app_errors.ErrRecordNotFound {
 		return nil, errors.New("an account with that phone number already exists")
 	}
 
@@ -49,7 +51,7 @@ func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
 		LastName:    request.LastName,
 		Password:    hashedPassword,
 		PhoneNumber: request.PhoneNumber,
-		Role:        role,
+		Role:        *role,
 		RoleID:      role.ID,
 	}
 
