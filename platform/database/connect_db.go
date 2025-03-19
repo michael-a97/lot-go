@@ -2,12 +2,11 @@ package database
 
 import (
 	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"lot/config"
 	"lot/pkg/entity"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func ConnectDb() *gorm.DB {

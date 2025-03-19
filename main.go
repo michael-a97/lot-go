@@ -5,7 +5,9 @@ import (
 	"log"
 	"lot/api/route"
 	"lot/config"
-	"lot/pkg/repository"
+	authRepository "lot/pkg/repository/auth"
+	roleRepository "lot/pkg/repository/role"
+	userRepository "lot/pkg/repository/user"
 	"lot/pkg/service"
 	"lot/platform/database"
 	firebaseApp "lot/platform/firebase"
@@ -31,9 +33,9 @@ func main() {
 	app.Use(logger.New())
 	api := app.Group("/api/v1")
 
-	userRepository := repository.NewUserRepository(db)
-	roleRepository := repository.NewRoleRepository(db)
-	authRepository := repository.NewAuthRepository(db)
+	userRepository := userRepository.NewUserRepository(db)
+	roleRepository := roleRepository.NewRoleRepository(db)
+	authRepository := authRepository.NewAuthRepository(db)
 
 	userService := service.NewUserService(userRepository, roleRepository)
 	authService := service.NewAuthService(

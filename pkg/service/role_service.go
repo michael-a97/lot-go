@@ -2,7 +2,7 @@ package service
 
 import (
 	entity "lot/pkg/entity"
-	repository "lot/pkg/repository"
+	repository "lot/pkg/repository/role"
 )
 
 type RoleService interface {

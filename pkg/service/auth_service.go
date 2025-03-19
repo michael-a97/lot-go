@@ -5,13 +5,16 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
 	dto "lot/api/dto/auth"
 	"lot/config"
 	"lot/pkg/entity"
-	"lot/pkg/repository"
+	app_errors "lot/pkg/errors"
+	auth "lot/pkg/repository/auth"
+	user "lot/pkg/repository/user"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -26,14 +29,14 @@ type AuthService interface {
 }
 
 type authService struct {
-	userRepository  repository.UserRepository
-	authRepository  repository.AuthRepository
+	userRepository  user.UserRepository
+	authRepository  auth.AuthRepository
 	smsTokenVerfier SmsTokenVerifier
 }
 
 func (a authService) SignIn(request dto.LoginRequest) (*dto.AuthenticationResponse, error) {
-	user := a.userRepository.FindByPhoneNumber(request.PhoneNumber)
-	if user == nil {
+	user, err := a.userRepository.FindByPhoneNumber(request.PhoneNumber)
+	if errors.Is(err, app_errors.ErrRecordNotFound) {
 		return nil, errors.New("invalid phone number or password")
 	}
 
@@ -148,8 +151,8 @@ func hashAndEncodeToHex(token string) string {
 }
 
 func NewAuthService(
-	authRepository repository.AuthRepository,
-	userRepository repository.UserRepository,
+	authRepository auth.AuthRepository,
+	userRepository user.UserRepository,
 	smsTokenVerifier SmsTokenVerifier,
 ) AuthService {
 	return &authService{
