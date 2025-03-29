@@ -2,8 +2,8 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	"lot/pkg/entity"
-	errors "lot/pkg/errors"
+	"lot/internal/entity"
+	"lot/internal/errors"
 )
 
 type userRepository struct {
@@ -28,7 +28,7 @@ func (u userRepository) FindById(id uint) (*entity.User, error) {
 	result := u.DB.Model(&entity.User{}).Preload("Role").Find(&user, id)
 
 	if result.RowsAffected == 0 {
-		return nil, errors.ErrRecordNotFound
+		return nil, app_errors.ErrRecordNotFound
 	}
 	return &user, nil
 }
@@ -53,7 +53,7 @@ func (u userRepository) FindByPhoneNumber(phoneNumber string) (*entity.User, err
 	var user entity.User
 	result := u.DB.Model(&entity.User{}).Where("phone_number = ?", phoneNumber).Preload("Role").Find(&user)
 	if result.RowsAffected == 0 {
-		return nil, errors.ErrRecordNotFound
+		return nil, app_errors.ErrRecordNotFound
 	} else {
 		return &user, nil
 	}

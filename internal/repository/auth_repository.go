@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"lot/pkg/entity"
+	"lot/internal/entity"
 
 	"gorm.io/gorm"
 )

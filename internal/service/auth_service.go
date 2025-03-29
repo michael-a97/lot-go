@@ -5,13 +5,11 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	dto "lot/api/dto/auth"
+	"lot/api/dto"
 	"lot/config"
-	"lot/pkg/entity"
-	app_errors "lot/pkg/errors"
-	auth "lot/pkg/repository/auth"
-	user "lot/pkg/repository/user"
-	smsTokenVerifier "lot/pkg/service/sms_token_verifier"
+	"lot/internal/entity"
+	app_errors "lot/internal/errors"
+	 "lot/internal/repository"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -30,9 +28,9 @@ type AuthService interface {
 }
 
 type authService struct {
-	userRepository  user.UserRepository
-	authRepository  auth.AuthRepository
-	smsTokenVerfier smsTokenVerifier.SmsTokenVerifier
+	userRepository  repository.UserRepository
+	authRepository  repository.AuthRepository
+	smsTokenVerfier SmsTokenVerifier
 }
 
 func (a authService) SignIn(request dto.LoginRequest) (*dto.AuthenticationResponse, error) {
@@ -157,9 +155,9 @@ func HashAndEncodeToHex(token string) string {
 }
 
 func NewAuthService(
-	authRepository auth.AuthRepository,
-	userRepository user.UserRepository,
-	smsTokenVerifier smsTokenVerifier.SmsTokenVerifier,
+	authRepository repository.AuthRepository,
+	userRepository repository.UserRepository,
+	smsTokenVerifier SmsTokenVerifier,
 ) AuthService {
 	return &authService{
 		userRepository:  userRepository,

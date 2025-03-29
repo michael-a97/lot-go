@@ -2,8 +2,8 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	entity "lot/pkg/entity"
-	errors "lot/pkg/errors"
+	entity "lot/internal/entity"
+	errors "lot/internal/errors"
 )
 
 type RoleRepository interface {

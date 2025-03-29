@@ -1,8 +1,8 @@
 package handler
 
 import (
-	dto "lot/api/dto/auth"
-	"lot/pkg/service/auth"
+	dto "lot/api/dto"
+	"lot/internal/service"
 
 	"github.com/gofiber/fiber/v2"
 )
