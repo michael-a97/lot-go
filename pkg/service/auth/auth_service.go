@@ -11,6 +11,7 @@ import (
 	app_errors "lot/pkg/errors"
 	auth "lot/pkg/repository/auth"
 	user "lot/pkg/repository/user"
+	smsTokenVerifier "lot/pkg/service/sms_token_verifier"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -31,20 +32,20 @@ type AuthService interface {
 type authService struct {
 	userRepository  user.UserRepository
 	authRepository  auth.AuthRepository
-	smsTokenVerfier SmsTokenVerifier
+	smsTokenVerfier smsTokenVerifier.SmsTokenVerifier
 }
 
 func (a authService) SignIn(request dto.LoginRequest) (*dto.AuthenticationResponse, error) {
 	user, err := a.userRepository.FindByPhoneNumber(request.PhoneNumber)
-	if errors.Is(err, app_errors.ErrRecordNotFound) {
-		return nil, errors.New("invalid phone number or password")
+	if errors.Is(err, app_errors.ErrAccountNotFound) {
+		return nil, err
 	}
 
 	if err := bcrypt.CompareHashAndPassword(
 		[]byte(user.Password),
 		[]byte(request.Password),
 	); err != nil {
-		return nil, errors.New("invalid phone number or password")
+		return nil, app_errors.ErrInvalidPhoneNumberOrPassword
 	}
 
 	accessToken, err := GetSignedToken(*user, time.Now().Add(AccessTokenTTL))
@@ -61,7 +62,7 @@ func (a authService) SignIn(request dto.LoginRequest) (*dto.AuthenticationRespon
 		return nil, err
 	}
 
-	a.authRepository.SaveRefreshToken(hashAndEncodeToHex(refreshToken), user.ID)
+	a.authRepository.SaveRefreshToken(HashAndEncodeToHex(refreshToken), user.ID)
 
 	response := dto.AuthenticationResponse{
 		ID:           user.ID,
@@ -80,7 +81,12 @@ func (a authService) RefreshToken(request dto.TokenRefreshRequest) (*dto.Authent
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(config.Config("secret")), nil
+		secret, err := config.Config("secret")
+		if err != nil {
+			return nil, err
+		}
+
+		return []byte(secret), nil
 	})
 
 	if err != nil {
@@ -100,7 +106,7 @@ func (a authService) RefreshToken(request dto.TokenRefreshRequest) (*dto.Authent
 		return nil, err
 	}
 
-	ok, err := a.authRepository.IsValidRefreshToken(hashAndEncodeToHex(request.RefreshToken), id)
+	ok, err := a.authRepository.IsValidRefreshToken(HashAndEncodeToHex(request.RefreshToken), id)
 
 	if err != nil {
 		return nil, err
@@ -123,7 +129,7 @@ func (a authService) RefreshToken(request dto.TokenRefreshRequest) (*dto.Authent
 		return nil, err
 	}
 
-	a.authRepository.SaveRefreshToken(hashAndEncodeToHex(refreshToken), user.ID)
+	a.authRepository.SaveRefreshToken(HashAndEncodeToHex(refreshToken), user.ID)
 
 	response := dto.AuthenticationResponse{
 		ID:           user.ID,
@@ -144,7 +150,7 @@ func (a authService) VerifyPhoneNumberAuthenticationToken(token string) (bool, e
 	return valid, nil
 }
 
-func hashAndEncodeToHex(token string) string {
+func HashAndEncodeToHex(token string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(token))
 	return hex.EncodeToString(hasher.Sum(nil))
@@ -153,7 +159,7 @@ func hashAndEncodeToHex(token string) string {
 func NewAuthService(
 	authRepository auth.AuthRepository,
 	userRepository user.UserRepository,
-	smsTokenVerifier SmsTokenVerifier,
+	smsTokenVerifier smsTokenVerifier.SmsTokenVerifier,
 ) AuthService {
 	return &authService{
 		userRepository:  userRepository,
@@ -169,6 +175,10 @@ func GetSignedToken(user entity.User, expiryTime time.Time) (string, error) {
 	claims["role"] = user.Role.Name
 	claims["issued_at"] = time.Now()
 	claims["expires_at"] = expiryTime
-	signedToken, err := signer.SignedString([]byte(config.Config("secret")))
+	secret, err := config.Config("secret")
+	if err != nil {
+		return "", err
+	}
+	signedToken, err := signer.SignedString([]byte(secret))
 	return signedToken, err
 }

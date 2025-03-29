@@ -3,13 +3,14 @@ package route
 import (
 	"github.com/gofiber/fiber/v2"
 	"lot/api/handler"
-	"lot/pkg/service"
+	authService "lot/pkg/service/auth"
+	userService "lot/pkg/service/user"
 )
 
 func SetupUserRoutes(
 	router fiber.Router,
-	userService service.UserService,
-	authService service.AuthService,
+	userService userService.UserService,
+	authService authService.AuthService,
 ) {
 	router.Post("/signup", handler.SignUpHandler(userService, authService))
 }
