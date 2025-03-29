@@ -2,7 +2,7 @@ package handler
 
 import (
 	dto "lot/api/dto/auth"
-	"lot/pkg/service"
+	"lot/pkg/service/auth"
 
 	"github.com/gofiber/fiber/v2"
 )

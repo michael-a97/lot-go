@@ -2,12 +2,13 @@ package handler
 
 import (
 	dto "lot/api/dto/user"
-	"lot/pkg/service"
+	userService "lot/pkg/service/user"
+	authService "lot/pkg/service/auth"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func SignUpHandler(userService service.UserService, authService service.AuthService) fiber.Handler {
+func SignUpHandler(userService userService.UserService, authService authService.AuthService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var request dto.SignUpRequest
 		if err := c.BodyParser(&request); err != nil {

@@ -3,13 +3,18 @@ package config
 import (
 	"fmt"
 	"os"
+
 	"github.com/joho/godotenv"
 )
 
-func Config(key string) string{
-	err := godotenv.Load(".env")
-	if err != nil{
-		fmt.Println(err.Error())
+func LoadEnv() error {
+	return godotenv.Load(".env")
+}
+
+func Config(key string) (string, error) {
+	value, ok := os.LookupEnv(key)
+	if !ok {
+		return "", fmt.Errorf("unable to find %v", key)
 	}
-	return os.Getenv(key)
+	return value, nil
 }

@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"lot/pkg/entity"
-	"lot/pkg/service"
+	"lot/pkg/service/role"
 )
 
 func Seed(roleService service.RoleService) {

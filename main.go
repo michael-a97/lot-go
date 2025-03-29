@@ -8,7 +8,10 @@ import (
 	authRepository "lot/pkg/repository/auth"
 	roleRepository "lot/pkg/repository/role"
 	userRepository "lot/pkg/repository/user"
-	"lot/pkg/service"
+	authService "lot/pkg/service/auth"
+	smsTokenVerifierService "lot/pkg/service/sms_token_verifier"
+	userService "lot/pkg/service/user"
+
 	"lot/platform/database"
 	firebaseApp "lot/platform/firebase"
 
@@ -17,6 +20,7 @@ import (
 )
 
 func main() {
+	config.LoadEnv()
 	db := database.ConnectDb()
 
 	firebaseApp, err := firebaseApp.ConnectFirebaseApp()
@@ -37,14 +41,18 @@ func main() {
 	roleRepository := roleRepository.NewRoleRepository(db)
 	authRepository := authRepository.NewAuthRepository(db)
 
-	userService := service.NewUserService(userRepository, roleRepository)
-	authService := service.NewAuthService(
+	userService := userService.NewUserService(userRepository, roleRepository)
+	authService := authService.NewAuthService(
 		authRepository, userRepository,
-		service.NewFirebaseSmsTokenVerifier(firebaseAuthClient),
+		smsTokenVerifierService.NewFirebaseSmsTokenVerifier(firebaseAuthClient),
 	)
 
 	route.SetupUserRoutes(api.Group("/user"), userService, authService)
 	route.SetupAuthRoutes(api.Group("/auth"), authService)
 
-	log.Fatal(app.Listen(":" + config.Config("appPort")))
+	appPort, err := config.Config("appPort")
+	if err != nil {
+		log.Fatal("please specify an `appPort`")
+	}
+	log.Fatal(app.Listen(":" + appPort))
 }
