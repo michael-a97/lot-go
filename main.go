@@ -5,12 +5,8 @@ import (
 	"log"
 	"lot/api/route"
 	"lot/config"
-	authRepository "lot/pkg/repository/auth"
-	roleRepository "lot/pkg/repository/role"
-	userRepository "lot/pkg/repository/user"
-	authService "lot/pkg/service/auth"
-	smsTokenVerifierService "lot/pkg/service/sms_token_verifier"
-	userService "lot/pkg/service/user"
+	"lot/internal/repository"
+	"lot/internal/service"
 
 	"lot/platform/database"
 	firebaseApp "lot/platform/firebase"
@@ -37,14 +33,14 @@ func main() {
 	app.Use(logger.New())
 	api := app.Group("/api/v1")
 
-	userRepository := userRepository.NewUserRepository(db)
-	roleRepository := roleRepository.NewRoleRepository(db)
-	authRepository := authRepository.NewAuthRepository(db)
+	userRepository := repository.NewUserRepository(db)
+	roleRepository := repository.NewRoleRepository(db)
+	authRepository := repository.NewAuthRepository(db)
 
-	userService := userService.NewUserService(userRepository, roleRepository)
-	authService := authService.NewAuthService(
+	userService := service.NewUserService(userRepository, roleRepository)
+	authService := service.NewAuthService(
 		authRepository, userRepository,
-		smsTokenVerifierService.NewFirebaseSmsTokenVerifier(firebaseAuthClient),
+		service.NewFirebaseSmsTokenVerifier(firebaseAuthClient),
 	)
 
 	route.SetupUserRoutes(api.Group("/user"), userService, authService)

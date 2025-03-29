@@ -2,23 +2,22 @@ package service
 
 import (
 	"errors"
-	"lot/api/dto/user"
-	entity "lot/pkg/entity"
-	app_errors "lot/pkg/errors"
-	role "lot/pkg/repository/role"
-	user "lot/pkg/repository/user"
+	"lot/api/dto"
+	"lot/internal/entity"
+	app_errors "lot/internal/errors"
+	"lot/internal/repository"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type userService struct {
-	userRepository user.UserRepository
-	roleRepository role.RoleRepository
+	userRepository repository.UserRepository
+	roleRepository repository.RoleRepository
 }
 
 func NewUserService(
-	userRepository user.UserRepository,
-	roleRepository role.RoleRepository,
+	userRepository repository.UserRepository,
+	roleRepository repository.RoleRepository,
 ) UserService {
 	return &userService{
 		userRepository: userRepository,

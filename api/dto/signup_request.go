@@ -2,7 +2,7 @@ package dto
 
 import (
 	"fmt"
-	"lot/pkg/entity"
+	"lot/internal/entity"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

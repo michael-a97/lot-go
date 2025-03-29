@@ -1,12 +1,10 @@
 package service
 
 import (
-	dto "lot/api/dto/auth"
-	"lot/pkg/entity"
-	app_errors "lot/pkg/errors"
-	authRepository "lot/pkg/repository/auth"
-	userRepository "lot/pkg/repository/user"
-	service "lot/pkg/service/sms_token_verifier"
+	"lot/api/dto"
+	"lot/internal/entity"
+	"lot/internal/errors"
+	repositoryMocks "lot/internal/repository/mocks"
 	"os"
 	"testing"
 
@@ -19,9 +17,9 @@ func TestSignIn(t *testing.T) {
 	t.Run("should return account not found error"+
 		" when phone number is invalid",
 		func(t *testing.T) {
-			mockRepository := authRepository.MockAuthRepository{}
-			mockUserRepository := userRepository.MockUserRepository{}
-			smsTokenVerifier := service.MockSmsTokenVerifier{}
+			mockRepository := repositoryMocks.MockAuthRepository{}
+			mockUserRepository := repositoryMocks.MockUserRepository{}
+			smsTokenVerifier := MockSmsTokenVerifier{}
 			signInRequest := dto.LoginRequest{
 				PhoneNumber: "+251923001100",
 				Password:    "password",
@@ -49,9 +47,9 @@ func TestSignIn(t *testing.T) {
 	t.Run("should return invalid phone number or password error"+
 		" when password is incorrect",
 		func(t *testing.T) {
-			mockRepository := authRepository.MockAuthRepository{}
-			mockUserRepository := userRepository.MockUserRepository{}
-			smsTokenVerifier := service.MockSmsTokenVerifier{}
+			mockRepository := repositoryMocks.MockAuthRepository{}
+			mockUserRepository := repositoryMocks.MockUserRepository{}
+			smsTokenVerifier := MockSmsTokenVerifier{}
 			signInRequest := dto.LoginRequest{
 				PhoneNumber: "+251923001100",
 				Password:    "password",
@@ -83,9 +81,9 @@ func TestSignIn(t *testing.T) {
 
 	t.Run("should return error when unable to get signed token",
 		func(t *testing.T) {
-			mockAuthRepository := authRepository.MockAuthRepository{}
-			mockUserRepository := userRepository.MockUserRepository{}
-			smsTokenVerifier := service.MockSmsTokenVerifier{}
+			mockAuthRepository := repositoryMocks.MockAuthRepository{}
+			mockUserRepository := repositoryMocks.MockUserRepository{}
+			smsTokenVerifier := MockSmsTokenVerifier{}
 			signInRequest := dto.LoginRequest{
 				PhoneNumber: "+251923001100",
 				Password:    "password",
@@ -122,9 +120,9 @@ func TestSignIn(t *testing.T) {
 	t.Run("should return authentication response when successful",
 		func(t *testing.T) {
 			os.Setenv("secret", "1234")
-			mockAuthRepository := authRepository.MockAuthRepository{}
-			mockUserRepository := userRepository.MockUserRepository{}
-			smsTokenVerifier := service.MockSmsTokenVerifier{}
+			mockAuthRepository := repositoryMocks.MockAuthRepository{}
+			mockUserRepository := repositoryMocks.MockUserRepository{}
+			smsTokenVerifier := MockSmsTokenVerifier{}
 			signInRequest := dto.LoginRequest{
 				PhoneNumber: "+251923001100",
 				Password:    "password",

@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"lot/pkg/entity"
-	app_errors "lot/pkg/errors"
+	"lot/internal/entity"
+	"lot/internal/errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,7 +20,7 @@ func setupTestDB() *gorm.DB {
 	return db
 }
 
-func TestSave(t *testing.T) {
+func TestRoleRepository_Save(t *testing.T) {
 	role := entity.Role{
 		Name: "attendant",
 	}

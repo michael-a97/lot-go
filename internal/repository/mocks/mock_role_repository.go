@@ -1,7 +1,7 @@
 package repository
 
 import (
-	entity "lot/pkg/entity"
+	entity "lot/internal/entity"
 
 	"github.com/stretchr/testify/mock"
 )

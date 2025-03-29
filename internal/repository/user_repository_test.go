@@ -1,24 +1,14 @@
 package repository
 
 import (
-	"lot/pkg/entity"
-	"lot/pkg/errors"
+	"lot/internal/entity"
+	"lot/internal/errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+
 )
 
-func setupTestDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	if err != nil {
-		panic("Failed to connect to test db")
-	}
-
-	db.AutoMigrate(&entity.User{}, &entity.Role{})
-	return db
-}
 
 func TestSave(t *testing.T) {
 	role := entity.Role{

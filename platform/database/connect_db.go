@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"lot/config"
-	"lot/pkg/entity"
+	"lot/internal/entity"
 )
 
 func ConnectDb() *gorm.DB {

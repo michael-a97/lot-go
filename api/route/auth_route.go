@@ -2,7 +2,7 @@ package route
 
 import (
 	"lot/api/handler"
-	"lot/pkg/service/auth"
+	"lot/internal/service"
 
 	"github.com/gofiber/fiber/v2"
 )
