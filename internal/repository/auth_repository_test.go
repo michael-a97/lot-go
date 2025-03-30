@@ -5,10 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
 )
-
-
 
 func TestSaveRefreshToken(t *testing.T) {
 	t.Run("Should return nill when successful", func(t *testing.T) {
