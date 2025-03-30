@@ -6,9 +6,19 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
+func setupTestDatabase_UserRepository() *gorm.DB {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	if err != nil {
+		panic("Failed to connect to test db")
+	}
+
+	db.AutoMigrate(&entity.User{})
+	return db
+}
 
 func TestSave(t *testing.T) {
 	role := entity.Role{
@@ -23,7 +33,7 @@ func TestSave(t *testing.T) {
 	}
 
 	t.Run("Should return nil after saving successfully", func(t *testing.T) {
-		db := setupTestDB()
+		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
 		err := userRepository.Save(user1)
 
@@ -31,7 +41,7 @@ func TestSave(t *testing.T) {
 	})
 
 	t.Run("Should an error when an error occurs", func(t *testing.T) {
-		db := setupTestDB()
+		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
 		sqlDb, _ := db.DB()
 		sqlDb.Close()
@@ -55,7 +65,7 @@ func TestFindById(t *testing.T) {
 	}
 
 	t.Run("Should return previously saved user", func(t *testing.T) {
-		db := setupTestDB()
+		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
 		userRepository.Save(user1)
 
@@ -70,7 +80,7 @@ func TestFindById(t *testing.T) {
 	})
 
 	t.Run("Should return nil, record not found error when there are no results found", func(t *testing.T) {
-		db := setupTestDB()
+		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
 
 		user, err := userRepository.FindById(1)
@@ -93,7 +103,7 @@ func TestDelete(t *testing.T) {
 	}
 
 	t.Run("Should return nil after deleting successfully", func(t *testing.T) {
-		db := setupTestDB()
+		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
 		userRepository.Save(user1)
 		savedUser, _ := userRepository.FindById(1)
@@ -104,7 +114,7 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("Should an error when an error occurs", func(t *testing.T) {
-		db := setupTestDB()
+		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
 		userRepository.Save(user1)
 		savedUser, _ := userRepository.FindById(1)
@@ -130,7 +140,7 @@ func TestFindByPhoneNumber(t *testing.T) {
 	}
 
 	t.Run("Should return previously saved user", func(t *testing.T) {
-		db := setupTestDB()
+		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
 		userRepository.Save(user1)
 
@@ -145,7 +155,7 @@ func TestFindByPhoneNumber(t *testing.T) {
 	})
 
 	t.Run("Should return nil, record not found error when there are no results found", func(t *testing.T) {
-		db := setupTestDB()
+		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
 
 		user, err := userRepository.FindByPhoneNumber(user1.PhoneNumber)
