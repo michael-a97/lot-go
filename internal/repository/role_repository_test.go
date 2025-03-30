@@ -16,7 +16,7 @@ func setupTestDB() *gorm.DB {
 		panic("Failed to connect to test db")
 	}
 
-	db.AutoMigrate(&entity.Role{})
+	_ = db.AutoMigrate(&entity.Role{})
 	return db
 }
 
@@ -37,7 +37,7 @@ func TestRoleRepository_Save(t *testing.T) {
 		db := setupTestDB()
 		roleRepository := NewRoleRepository(db)
 		sqlDb, _ := db.DB()
-		sqlDb.Close()
+		_ = sqlDb.Close()
 
 		err := roleRepository.Save(role)
 
@@ -53,7 +53,7 @@ func TestFindUserRoleByName(t *testing.T) {
 	t.Run("Should return nil after saving successfully", func(t *testing.T) {
 		db := setupTestDB()
 		roleRepository := NewRoleRepository(db)
-		roleRepository.Save(role)
+		_ = roleRepository.Save(role)
 
 		savedRole, err := roleRepository.FindUserRoleByName(role.Name)
 
@@ -66,7 +66,7 @@ func TestFindUserRoleByName(t *testing.T) {
 		roleRepository := NewRoleRepository(db)
 
 		sqlDb, _ := db.DB()
-		sqlDb.Close()
+		_ = sqlDb.Close()
 
 		role, err := roleRepository.FindUserRoleByName("test")
 
@@ -83,7 +83,7 @@ func TestFind(t *testing.T) {
 	t.Run("Should return nil after saving successfully", func(t *testing.T) {
 		db := setupTestDB()
 		roleRepository := NewRoleRepository(db)
-		roleRepository.Save(role)
+		_ = roleRepository.Save(role)
 
 		roles := roleRepository.Find()
 

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"lot/api/dto"
 	"lot/internal/entity"
 	"lot/internal/errors"
@@ -119,7 +120,9 @@ func TestSignIn(t *testing.T) {
 
 	t.Run("should return authentication response when successful",
 		func(t *testing.T) {
-			os.Setenv("secret", "1234")
+			if err :=os.Setenv("secret", "1234"); err !=nil{
+				log.Fatal(err.Error())
+			}
 			mockAuthRepository := repositoryMocks.MockAuthRepository{}
 			mockUserRepository := repositoryMocks.MockUserRepository{}
 			smsTokenVerifier := MockSmsTokenVerifier{}

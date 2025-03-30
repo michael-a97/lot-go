@@ -9,13 +9,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func setupTestDatabase_AuthRepository() *gorm.DB{
+func setupTestDatabase_AuthRepository() *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect to test db")
 	}
 
-	db.AutoMigrate(&entity.RefreshToken{})
+	_ = db.AutoMigrate(&entity.RefreshToken{})
 	return db
 }
 
@@ -37,7 +37,7 @@ func TestSaveRefreshToken(t *testing.T) {
 		db := setupTestDatabase_AuthRepository()
 		authRepository := NewAuthRepository(db)
 		sqlDb, _ := db.DB()
-		sqlDb.Close()
+		_ = sqlDb.Close()
 
 		err := authRepository.SaveRefreshToken(token, userId)
 
@@ -49,10 +49,10 @@ func TestRevokeAllRefreshTokensForUser(t *testing.T) {
 	t.Run("Should revoke previously saved tokens ", func(t *testing.T) {
 		db := setupTestDatabase_AuthRepository()
 		authRepository := authRepository{DB: db}
-		authRepository.SaveRefreshToken("token1", 1)
-		authRepository.SaveRefreshToken("token2", 1)
+		_ = authRepository.SaveRefreshToken("token1", 1)
+		_ = authRepository.SaveRefreshToken("token2", 1)
 
-		authRepository.RevokeAllRefreshTokensForUser(1)
+		_ = authRepository.RevokeAllRefreshTokensForUser(1)
 
 		var activeTokens []entity.RefreshToken
 		db.Model(&entity.RefreshToken{}).Where("revoked = ?", false).Find(&activeTokens)
@@ -62,11 +62,11 @@ func TestRevokeAllRefreshTokensForUser(t *testing.T) {
 	t.Run("Should return an error when an error occurs ", func(t *testing.T) {
 		db := setupTestDatabase_AuthRepository()
 		authRepository := authRepository{DB: db}
-		authRepository.SaveRefreshToken("token1", 1)
-		authRepository.SaveRefreshToken("token2", 1)
+		_ = authRepository.SaveRefreshToken("token1", 1)
+		_ = authRepository.SaveRefreshToken("token2", 1)
 		sqlDB, _ := db.DB()
 
-		sqlDB.Close()
+		_ = sqlDB.Close()
 		err := authRepository.RevokeAllRefreshTokensForUser(1)
 
 		assert.Error(t, err)
@@ -83,7 +83,7 @@ func TestIsValidRefreshToken(t *testing.T) {
 	t.Run("Should return true if the token is valid", func(t *testing.T) {
 		db := setupTestDatabase_AuthRepository()
 		authRepository := NewAuthRepository(db)
-		authRepository.SaveRefreshToken(token.Token, token.UserID)
+		_ = authRepository.SaveRefreshToken(token.Token, token.UserID)
 
 		result, err := authRepository.IsValidRefreshToken(token.Token, token.UserID)
 
@@ -104,7 +104,7 @@ func TestIsValidRefreshToken(t *testing.T) {
 		db := setupTestDatabase_AuthRepository()
 		authRepository := NewAuthRepository(db)
 		sqlDb, _ := db.DB()
-		sqlDb.Close()
+		_ = sqlDb.Close()
 
 		result, err := authRepository.IsValidRefreshToken(token.Token, token.UserID)
 

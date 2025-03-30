@@ -16,7 +16,7 @@ func setupTestDatabase_UserRepository() *gorm.DB {
 		panic("Failed to connect to test db")
 	}
 
-	db.AutoMigrate(&entity.User{})
+	_ = db.AutoMigrate(&entity.User{})
 	return db
 }
 
@@ -44,7 +44,7 @@ func TestSave(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
 		sqlDb, _ := db.DB()
-		sqlDb.Close()
+		_ = sqlDb.Close()
 
 		err := userRepository.Save(user1)
 
@@ -67,7 +67,7 @@ func TestFindById(t *testing.T) {
 	t.Run("Should return previously saved user", func(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
-		userRepository.Save(user1)
+		_ = userRepository.Save(user1)
 
 		user, err := userRepository.FindById(1)
 
@@ -105,7 +105,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Should return nil after deleting successfully", func(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
-		userRepository.Save(user1)
+		_ = userRepository.Save(user1)
 		savedUser, _ := userRepository.FindById(1)
 
 		err := userRepository.Delete(*savedUser)
@@ -116,10 +116,10 @@ func TestDelete(t *testing.T) {
 	t.Run("Should an error when an error occurs", func(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
-		userRepository.Save(user1)
+		_ = userRepository.Save(user1)
 		savedUser, _ := userRepository.FindById(1)
 		sqlDb, _ := db.DB()
-		sqlDb.Close()
+		_ = sqlDb.Close()
 
 		err := userRepository.Delete(*savedUser)
 
@@ -142,7 +142,7 @@ func TestFindByPhoneNumber(t *testing.T) {
 	t.Run("Should return previously saved user", func(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
-		userRepository.Save(user1)
+		_ = userRepository.Save(user1)
 
 		user, err := userRepository.FindByPhoneNumber(user1.PhoneNumber)
 
