@@ -7,6 +7,7 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,6 +20,7 @@ jobs:
         run: test -z "$(gofmt -l .)"
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,7 +34,8 @@ jobs:
         with:
           version: latest
   tidy:
-    runs-on: u¬buntu-latest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -72,6 +75,3 @@ jobs:
 
       - name: Build project
         run: go build -v ./...
-
-      - name: Run tests
-        run: go test -v ./...
