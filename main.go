@@ -16,7 +16,9 @@ import (
 )
 
 func main() {
-	config.LoadEnv()
+	if err := config.LoadEnv(); err != nil {
+		log.Fatal(err)
+	}
 	db := database.ConnectDb()
 
 	firebaseApp, err := firebaseApp.ConnectFirebaseApp()

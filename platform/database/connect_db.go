@@ -44,6 +44,8 @@ func ConnectDb() *gorm.DB {
 	} else {
 		fmt.Println("Connected to the db")
 	}
-	db.AutoMigrate(entity.Role{}, entity.User{}, entity.RefreshToken{})
+	if err := db.AutoMigrate(entity.Role{}, entity.User{}, entity.RefreshToken{}); err != nil {
+		log.Fatal(err.Error())
+	}
 	return db
 }

@@ -9,7 +9,7 @@ import (
 	"lot/config"
 	"lot/internal/entity"
 	app_errors "lot/internal/errors"
-	 "lot/internal/repository"
+	"lot/internal/repository"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -60,7 +60,9 @@ func (a authService) SignIn(request dto.LoginRequest) (*dto.AuthenticationRespon
 		return nil, err
 	}
 
-	a.authRepository.SaveRefreshToken(HashAndEncodeToHex(refreshToken), user.ID)
+	if err := a.authRepository.SaveRefreshToken(HashAndEncodeToHex(refreshToken), user.ID); err != nil {
+		return nil, err
+	}
 
 	response := dto.AuthenticationResponse{
 		ID:           user.ID,
@@ -127,7 +129,9 @@ func (a authService) RefreshToken(request dto.TokenRefreshRequest) (*dto.Authent
 		return nil, err
 	}
 
-	a.authRepository.SaveRefreshToken(HashAndEncodeToHex(refreshToken), user.ID)
+	if err := a.authRepository.SaveRefreshToken(HashAndEncodeToHex(refreshToken), user.ID); err != nil {
+		return nil, err
+	}
 
 	response := dto.AuthenticationResponse{
 		ID:           user.ID,
