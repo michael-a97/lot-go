@@ -35,7 +35,7 @@ func TestSave(t *testing.T) {
 	t.Run("Should return nil after saving successfully", func(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
-		err := userRepository.Save(user1)
+		_, err := userRepository.Save(user1)
 
 		assert.Nil(t, err)
 	})
@@ -46,7 +46,7 @@ func TestSave(t *testing.T) {
 		sqlDb, _ := db.DB()
 		_ = sqlDb.Close()
 
-		err := userRepository.Save(user1)
+		_, err := userRepository.Save(user1)
 
 		assert.Error(t, err)
 	})
@@ -67,7 +67,7 @@ func TestFindById(t *testing.T) {
 	t.Run("Should return previously saved user", func(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
-		_ = userRepository.Save(user1)
+		_, _ = userRepository.Save(user1)
 
 		user, err := userRepository.FindById(1)
 
@@ -105,7 +105,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Should return nil after deleting successfully", func(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
-		_ = userRepository.Save(user1)
+		_, _ = userRepository.Save(user1)
 		savedUser, _ := userRepository.FindById(1)
 
 		err := userRepository.Delete(*savedUser)
@@ -116,7 +116,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Should an error when an error occurs", func(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
-		_ = userRepository.Save(user1)
+		_, _ = userRepository.Save(user1)
 		savedUser, _ := userRepository.FindById(1)
 		sqlDb, _ := db.DB()
 		_ = sqlDb.Close()
@@ -142,7 +142,7 @@ func TestFindByPhoneNumber(t *testing.T) {
 	t.Run("Should return previously saved user", func(t *testing.T) {
 		db := setupTestDatabase_UserRepository()
 		userRepository := NewUserRepository(db)
-		_ = userRepository.Save(user1)
+		_, _ = userRepository.Save(user1)
 
 		user, err := userRepository.FindByPhoneNumber(user1.PhoneNumber)
 

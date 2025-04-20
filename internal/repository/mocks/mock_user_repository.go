@@ -10,9 +10,9 @@ type MockUserRepository struct {
 	mock.Mock
 }
 
-func (m *MockUserRepository) Save(user entity.User) error {
+func (m *MockUserRepository) Save(user entity.User) (*entity.User, error) {
 	args := m.Called(user)
-	return args.Error(0)
+	return args.Get(0).(*entity.User), args.Error(1)
 }
 
 func (m *MockUserRepository) Delete(user entity.User) error {
