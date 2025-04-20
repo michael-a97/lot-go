@@ -36,7 +36,7 @@ func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
 		return nil, errors.New("role not found")
 	}
 
-	if _, err := u.userRepository.FindByPhoneNumber(request.PhoneNumber); err == app_errors.ErrRecordNotFound {
+	if _, err := u.userRepository.FindByPhoneNumber(request.PhoneNumber); err != app_errors.ErrRecordNotFound {
 		return nil, errors.New("an account with that phone number already exists")
 	}
 
@@ -54,11 +54,12 @@ func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
 		RoleID:      role.ID,
 	}
 
-	if err := u.userRepository.Save(user); err != nil {
+	savedUser, err := u.userRepository.Save(user)
+	if err != nil {
 		return nil, err
 	}
 
-	return toDto(user), nil
+	return toDto(*savedUser), nil
 }
 
 func (u userService) hashPassword(password string) (string, error) {
@@ -72,5 +73,6 @@ func toDto(user entity.User) *dto.UserDto {
 		LastName:    user.LastName,
 		PhoneNumber: user.PhoneNumber,
 		Role:        user.Role.Name,
+		ID:          user.ID,
 	}
 }

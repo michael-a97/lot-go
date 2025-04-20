@@ -11,7 +11,7 @@ type userRepository struct {
 }
 
 type UserRepository interface {
-	Save(user entity.User) error
+	Save(user entity.User) (*entity.User, error)
 	Delete(user entity.User) error
 	FindById(id uint) (*entity.User, error)
 	FindByPhoneNumber(phoneNumber string) (*entity.User, error)
@@ -33,12 +33,12 @@ func (u userRepository) FindById(id uint) (*entity.User, error) {
 	return &user, nil
 }
 
-func (u userRepository) Save(user entity.User) error {
-	result := u.DB.Save(&user)
+func (u userRepository) Save(user entity.User) (*entity.User, error) {
+	result := u.DB.Create(&user)
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
-	return nil
+	return &user, nil
 }
 
 func (u userRepository) Delete(user entity.User) error {

@@ -4,6 +4,7 @@ import (
 	"lot/api/dto"
 	app_errors "lot/internal/errors"
 	"lot/internal/service"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -30,8 +31,9 @@ func SignUpHandler(userService service.UserService, authService service.AuthServ
 				},
 			)
 		}
+		token := strings.Split(c.Get("Authorization"), " ")[1]
 
-		isTokenValid, err := authService.VerifyPhoneNumberAuthenticationToken(request.PhoneNumberVerificationToken)
+		isTokenValid, err := authService.VerifyPhoneNumberAuthenticationToken(token)
 
 		if err != nil || !isTokenValid {
 			return c.Status(fiber.StatusBadRequest).JSON(
@@ -53,6 +55,10 @@ func SignUpHandler(userService service.UserService, authService service.AuthServ
 				},
 			)
 		}
-		return c.JSON(user)
+		return c.JSON(
+			dto.ApiResponse{
+				Data: user, Status: 200, Message: "Success",
+			},
+		)
 	}
 }

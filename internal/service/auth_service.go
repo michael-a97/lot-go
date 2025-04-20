@@ -65,12 +65,9 @@ func (a authService) SignIn(request dto.LoginRequest) (*dto.AuthenticationRespon
 	}
 
 	response := dto.AuthenticationResponse{
-		ID:           user.ID,
-		Role:         user.Role.Name,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
-		FirstName:    user.FirstName,
-		LastName:     user.LastName,
+		User: toDto(*user),
 	}
 
 	return &response, nil
@@ -134,12 +131,9 @@ func (a authService) RefreshToken(request dto.TokenRefreshRequest) (*dto.Authent
 	}
 
 	response := dto.AuthenticationResponse{
-		ID:           user.ID,
-		Role:         user.Role.Name,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
-		FirstName:    user.FirstName,
-		LastName:     user.LastName,
+		User:         toDto(*user),
 	}
 	return &response, nil
 }
