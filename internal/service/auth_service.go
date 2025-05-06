@@ -169,8 +169,8 @@ func GetSignedToken(user entity.User, expiryTime time.Time) (string, error) {
 	claims := signer.Claims.(jwt.MapClaims)
 	claims["id"] = user.ID
 	claims["role"] = user.Role.Name
-	claims["issued_at"] = time.Now()
-	claims["expires_at"] = expiryTime
+	claims["issued_at"] = time.Now().Unix()
+	claims["exp"] = expiryTime.Unix()
 	secret, err := config.Config("secret")
 	if err != nil {
 		return "", err
