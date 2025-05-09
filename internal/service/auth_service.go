@@ -10,6 +10,7 @@ import (
 	"lot/internal/entity"
 	app_errors "lot/internal/errors"
 	"lot/internal/repository"
+	"lot/internal/utilities"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -25,6 +26,7 @@ type AuthService interface {
 	SignIn(request dto.LoginRequest) (*dto.AuthenticationResponse, error)
 	RefreshToken(request dto.TokenRefreshRequest) (*dto.AuthenticationResponse, error)
 	VerifyPhoneNumberAuthenticationToken(token string) (bool, error)
+	ResetPassword(request dto.PasswordResetRequest) error
 }
 
 type authService struct {
@@ -67,7 +69,7 @@ func (a authService) SignIn(request dto.LoginRequest) (*dto.AuthenticationRespon
 	response := dto.AuthenticationResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
-		User: toDto(*user),
+		User:         toDto(*user),
 	}
 
 	return &response, nil
@@ -144,6 +146,28 @@ func (a authService) VerifyPhoneNumberAuthenticationToken(token string) (bool, e
 		return false, err
 	}
 	return valid, nil
+}
+
+func (a authService) ResetPassword(request dto.PasswordResetRequest) error {
+	user, err := a.userRepository.FindByPhoneNumber(request.PhoneNumber)
+	if err != nil {
+		return err
+	}
+
+	hashedPassword, err := utilities.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hashedPassword
+
+	_, err = a.userRepository.Save(*user)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func HashAndEncodeToHex(token string) string {
