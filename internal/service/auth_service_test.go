@@ -120,7 +120,7 @@ func TestSignIn(t *testing.T) {
 
 	t.Run("should return authentication response when successful",
 		func(t *testing.T) {
-			if err :=os.Setenv("secret", "1234"); err !=nil{
+			if err := os.Setenv("secret", "1234"); err != nil {
 				log.Fatal(err.Error())
 			}
 			mockAuthRepository := repositoryMocks.MockAuthRepository{}
@@ -159,5 +159,66 @@ func TestSignIn(t *testing.T) {
 			assert.IsType(t, dto.AuthenticationResponse{}, *response)
 
 		})
+
+}
+
+func TestResetPassword(t *testing.T) {
+	t.Run("should return error when the phone number in the request is not found",
+		func(t *testing.T) {
+			mockAuthRepository := repositoryMocks.MockAuthRepository{}
+			mockUserRepository := repositoryMocks.MockUserRepository{}
+			smsTokenVerifier := MockSmsTokenVerifier{}
+
+			request := dto.PasswordResetRequest{
+				PhoneNumber: "+251923001100",
+				NewPassword: "my-new-passw0rd",
+			}
+
+			authService := NewAuthService(
+				&mockAuthRepository,
+				&mockUserRepository,
+				&smsTokenVerifier,
+			)
+
+			var nilUserPointer *entity.User
+
+			mockUserRepository.On(
+				"FindByPhoneNumber",
+				request.PhoneNumber,
+			).Return(nilUserPointer, app_errors.ErrRecordNotFound)
+
+			err := authService.ResetPassword(request)
+
+			assert.Error(t, err)
+
+		},
+	)
+
+	t.Run("should return nill when successful",
+		func(t *testing.T) {
+			mockAuthRepository := repositoryMocks.MockAuthRepository{}
+			mockUserRepository := repositoryMocks.MockUserRepository{}
+			smsTokenVerifier := MockSmsTokenVerifier{}
+			request := dto.PasswordResetRequest{
+				PhoneNumber: "+251923001100",
+				NewPassword: "my-new-passw0rd",
+			}
+			authService := NewAuthService(
+				&mockAuthRepository,
+				&mockUserRepository,
+				&smsTokenVerifier,
+			)
+			user := entity.User{FirstName: "John", LastName: "Doe"}
+			mockUserRepository.On("FindByPhoneNumber", request.PhoneNumber).Return(&user, nil)
+			mockUserRepository.On(
+				"Save",
+				mock.Anything,
+			).Return(&user, nil)
+
+			err := authService.ResetPassword(request)
+
+			assert.Nil(t, err)
+		},
+	)
 
 }

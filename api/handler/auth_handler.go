@@ -2,7 +2,9 @@ package handler
 
 import (
 	dto "lot/api/dto"
+	app_errors "lot/internal/errors"
 	"lot/internal/service"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -96,5 +98,50 @@ func RefreshTokenHandler(authService service.AuthService) fiber.Handler {
 				Error:  nil,
 			},
 		)
+	}
+}
+
+func ResetPasswordHandler(authService service.AuthService) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var passwordResetRequest dto.PasswordResetRequest
+		if err := c.BodyParser(&passwordResetRequest); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				dto.ApiResponse{
+					Status: fiber.StatusBadRequest,
+					Error:  err.Error(),
+					Data:   nil,
+				},
+			)
+		}
+		if err := passwordResetRequest.Validate(); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				dto.ApiResponse{
+					Status: fiber.StatusBadRequest,
+					Error:  err.Error(),
+					Data:   nil,
+				},
+			)
+		}
+		token := strings.Split(c.Get("Authorization"), " ")[1]
+		isTokenValid, err := authService.VerifyPhoneNumberAuthenticationToken(token)
+		if err != nil || !isTokenValid {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				dto.ApiResponse{
+					Status: fiber.StatusBadRequest,
+					Data:   nil,
+					Error:  app_errors.ErrInvalidPhoneNumberVerificationToken,
+				},
+			)
+		}
+		if err = authService.ResetPassword(passwordResetRequest); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				dto.ApiResponse{
+					Status: fiber.StatusInternalServerError,
+					Data:   nil,
+					Error:  err,
+				},
+			)
+		}
+		return nil
 	}
 }

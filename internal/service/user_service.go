@@ -6,8 +6,7 @@ import (
 	"lot/internal/entity"
 	app_errors "lot/internal/errors"
 	"lot/internal/repository"
-
-	"golang.org/x/crypto/bcrypt"
+	"lot/internal/utilities"
 )
 
 type userService struct {
@@ -27,7 +26,6 @@ func NewUserService(
 
 type UserService interface {
 	SignUp(request dto.SignUpRequest) (*dto.UserDto, error)
-	hashPassword(password string) (string, error)
 }
 
 func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
@@ -40,7 +38,7 @@ func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
 		return nil, errors.New("an account with that phone number already exists")
 	}
 
-	hashedPassword, err := u.hashPassword(request.Password)
+	hashedPassword, err := utilities.HashPassword(request.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -60,11 +58,6 @@ func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
 	}
 
 	return toDto(*savedUser), nil
-}
-
-func (u userService) hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
 }
 
 func toDto(user entity.User) *dto.UserDto {
