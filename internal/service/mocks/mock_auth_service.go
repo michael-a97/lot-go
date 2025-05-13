@@ -2,6 +2,7 @@ package mocks
 
 import (
 	"lot/api/dto"
+	"lot/internal/entity"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -28,4 +29,14 @@ func (m *MockAuthService) VerifyPhoneNumberAuthenticationToken(token string) (bo
 func (m *MockAuthService) ResetPassword(request dto.PasswordResetRequest) error {
 	args := m.Called(request)
 	return args.Error(0)
+}
+
+func (m *MockAuthService) ChangePassword(request dto.ChangePasswordRequest, user entity.User) error {
+	args := m.Called(request, user)
+	return args.Error(0)
+}
+
+func (m *MockAuthService) GetUserFromAccessToken(accesToken string) (*entity.User, error) {
+	args := m.Called(accesToken)
+	return args.Get(0).(*entity.User), args.Error(1)
 }

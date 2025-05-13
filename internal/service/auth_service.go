@@ -27,6 +27,8 @@ type AuthService interface {
 	RefreshToken(request dto.TokenRefreshRequest) (*dto.AuthenticationResponse, error)
 	VerifyPhoneNumberAuthenticationToken(token string) (bool, error)
 	ResetPassword(request dto.PasswordResetRequest) error
+	ChangePassword(request dto.ChangePasswordRequest, user entity.User) error
+	GetUserFromAccessToken(accesToken string) (*entity.User, error)
 }
 
 type authService struct {
@@ -170,6 +172,27 @@ func (a authService) ResetPassword(request dto.PasswordResetRequest) error {
 
 }
 
+func (a authService) ChangePassword(request dto.ChangePasswordRequest, user entity.User) error {
+
+	if err := bcrypt.CompareHashAndPassword(
+		[]byte(user.Password),
+		[]byte(request.OldPassword),
+	); err != nil {
+		return app_errors.ErrInvalidPassword
+	}
+
+	hashedPassword, err := utilities.HashPassword(request.NewPassword)
+
+	if err != nil {
+		return err
+	}
+
+	user.Password = hashedPassword
+	_, err = a.userRepository.Update(user)
+
+	return err
+}
+
 func HashAndEncodeToHex(token string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(token))
@@ -201,4 +224,28 @@ func GetSignedToken(user entity.User, expiryTime time.Time) (string, error) {
 	}
 	signedToken, err := signer.SignedString([]byte(secret))
 	return signedToken, err
+}
+
+func (a authService) GetUserFromAccessToken(accesToken string) (*entity.User, error) {
+	token, err := jwt.Parse(accesToken, func(token *jwt.Token) (any, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		secret, err := config.Config("secret")
+		if err != nil {
+			return nil, err
+		}
+
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+	id := uint(claims["id"].(float64))
+
+	return a.userRepository.FindById(id)
+
 }

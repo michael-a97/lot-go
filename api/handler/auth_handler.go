@@ -1,7 +1,8 @@
 package handler
 
 import (
-	dto "lot/api/dto"
+	"lot/api/dto"
+	"lot/internal/entity"
 	app_errors "lot/internal/errors"
 	"lot/internal/service"
 	"strings"
@@ -143,5 +144,56 @@ func ResetPasswordHandler(authService service.AuthService) fiber.Handler {
 			)
 		}
 		return nil
+	}
+}
+
+func ChangePasswordHandler(authService service.AuthService) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var changePasswordRequest dto.ChangePasswordRequest
+		if err := c.BodyParser(&changePasswordRequest); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				dto.ApiResponse{
+					Status: fiber.StatusBadRequest,
+					Error:  err.Error(),
+					Data:   nil,
+				},
+			)
+		}
+		if err := changePasswordRequest.Validate(); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				dto.ApiResponse{
+					Status: fiber.StatusBadRequest,
+					Error:  err.Error(),
+					Data:   nil,
+				},
+			)
+		}
+
+		user := c.Locals("user").(*entity.User)
+
+		if err := authService.ChangePassword(changePasswordRequest, *user); err != nil {
+			var status int
+			if err.Error() == app_errors.ErrInvalidPassword.Error() {
+				status = fiber.StatusBadRequest
+			} else {
+				status = fiber.StatusInternalServerError
+			}
+			return c.Status(status).JSON(
+				dto.ApiResponse{
+					Status: status,
+					Error:  err.Error(),
+					Data:   nil,
+				},
+			)
+		}
+
+		return c.JSON(
+			dto.ApiResponse{
+				Status:  fiber.StatusOK,
+				Message: "Successfully changed password",
+				Data:    nil,
+				Error:   nil,
+			},
+		)
 	}
 }

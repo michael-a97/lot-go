@@ -5,3 +5,4 @@ tmp
 .vscode
 __debug*
 platform/firebase/*.json
+profile.cov

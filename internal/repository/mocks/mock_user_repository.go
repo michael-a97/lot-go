@@ -14,6 +14,10 @@ func (m *MockUserRepository) Save(user entity.User) (*entity.User, error) {
 	args := m.Called(user)
 	return args.Get(0).(*entity.User), args.Error(1)
 }
+func (m *MockUserRepository) Update(user entity.User) (*entity.User, error) {
+	args := m.Called(user)
+	return args.Get(0).(*entity.User), args.Error(1)
+}
 
 func (m *MockUserRepository) Delete(user entity.User) error {
 	args := m.Called(user)
