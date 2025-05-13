@@ -12,6 +12,7 @@ type userRepository struct {
 
 type UserRepository interface {
 	Save(user entity.User) (*entity.User, error)
+	Update(user entity.User) (*entity.User, error)
 	Delete(user entity.User) error
 	FindById(id uint) (*entity.User, error)
 	FindByPhoneNumber(phoneNumber string) (*entity.User, error)
@@ -40,6 +41,16 @@ func (u userRepository) Save(user entity.User) (*entity.User, error) {
 	}
 	return &user, nil
 }
+
+func (u userRepository) Update(user entity.User) (*entity.User, error) {
+	result := u.DB.Save(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+}
+
+
 
 func (u userRepository) Delete(user entity.User) error {
 	result := u.DB.Delete(&user)

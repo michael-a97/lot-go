@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"log"
 	"lot/api/dto"
 	"lot/internal/entity"
@@ -220,5 +221,66 @@ func TestResetPassword(t *testing.T) {
 			assert.Nil(t, err)
 		},
 	)
+
+}
+
+func TestChangePassword(t *testing.T) {
+	t.Run("should return invalid password error ", func(t *testing.T) {
+		mockAuthRepository := repositoryMocks.MockAuthRepository{}
+		mockUserRepository := repositoryMocks.MockUserRepository{}
+		smsTokenVerifier := MockSmsTokenVerifier{}
+
+		request := dto.ChangePasswordRequest{
+			OldPassword: "2222",
+			NewPassword: "1234",
+		}
+		user := entity.User{
+			FirstName:   "John",
+			LastName:    "Doe",
+			PhoneNumber: "+251923001100",
+			Password:    "$2a$14$A/zW6mNZEnK8s1zIKzSl0uo1yNuQtizeeMQA.HrwxxpyR37AzwV3x",
+		}
+
+		authService := NewAuthService(
+			&mockAuthRepository,
+			&mockUserRepository,
+			&smsTokenVerifier,
+		)
+
+		err := authService.ChangePassword(request, user)
+
+		assert.Error(t, err)
+		assert.Equal(t, err.Error(), app_errors.ErrInvalidPassword.Error())
+	})
+
+	t.Run("should return error if there's an error when updating user", func(t *testing.T) {
+		mockAuthRepository := repositoryMocks.MockAuthRepository{}
+		mockUserRepository := repositoryMocks.MockUserRepository{}
+		smsTokenVerifier := MockSmsTokenVerifier{}
+
+		request := dto.ChangePasswordRequest{
+			OldPassword: "2222",
+			NewPassword: "1234",
+		}
+		user := entity.User{
+			FirstName:   "John",
+			LastName:    "Doe",
+			PhoneNumber: "+251923001100",
+			Password:    "$2a$14$A/zW6mNZEnK8s1zIKzSl0uo1yNuQtizeeMQA.HrwxxpyR37AzwV3q",
+		}
+
+		mockUserRepository.On("Update", mock.Anything).Return(&entity.User{}, errors.New("some update db error"))
+
+		authService := NewAuthService(
+			&mockAuthRepository,
+			&mockUserRepository,
+			&smsTokenVerifier,
+		)
+
+		err := authService.ChangePassword(request, user)
+
+		assert.Error(t, err)
+		assert.Equal(t, err.Error(), errors.New("some update db error").Error())
+	})
 
 }
