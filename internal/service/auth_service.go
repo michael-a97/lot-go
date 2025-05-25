@@ -156,13 +156,13 @@ func (a authService) ResetPassword(request dto.PasswordResetRequest) error {
 		return err
 	}
 
-	hashedPassword, err := utilities.HashPassword(user.Password)
+	hashedPassword, err := utilities.HashPassword(request.NewPassword)
 	if err != nil {
 		return err
 	}
 	user.Password = hashedPassword
 
-	_, err = a.userRepository.Save(*user)
+	_, err = a.userRepository.Update(*user)
 
 	if err != nil {
 		return err
@@ -226,8 +226,8 @@ func GetSignedToken(user entity.User, expiryTime time.Time) (string, error) {
 	return signedToken, err
 }
 
-func (a authService) GetUserFromAccessToken(accesToken string) (*entity.User, error) {
-	token, err := jwt.Parse(accesToken, func(token *jwt.Token) (any, error) {
+func (a authService) GetUserFromAccessToken(accessToken string) (*entity.User, error) {
+	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}

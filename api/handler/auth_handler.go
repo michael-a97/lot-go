@@ -143,7 +143,13 @@ func ResetPasswordHandler(authService service.AuthService) fiber.Handler {
 				},
 			)
 		}
-		return nil
+		return c.Status(fiber.StatusOK).JSON(
+			dto.ApiResponse{
+				Status: fiber.StatusOK,
+				Data:   nil,
+				Error:  nil,
+			},
+		)
 	}
 }
 
