@@ -195,7 +195,7 @@ func TestResetPassword(t *testing.T) {
 		},
 	)
 
-	t.Run("should return nill when successful",
+	t.Run("should return nil when successful",
 		func(t *testing.T) {
 			mockAuthRepository := repositoryMocks.MockAuthRepository{}
 			mockUserRepository := repositoryMocks.MockUserRepository{}
@@ -212,7 +212,7 @@ func TestResetPassword(t *testing.T) {
 			user := entity.User{FirstName: "John", LastName: "Doe"}
 			mockUserRepository.On("FindByPhoneNumber", request.PhoneNumber).Return(&user, nil)
 			mockUserRepository.On(
-				"Save",
+				"Update",
 				mock.Anything,
 			).Return(&user, nil)
 
