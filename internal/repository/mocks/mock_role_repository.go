@@ -1,7 +1,7 @@
 package repository
 
 import (
-	entity "lot/internal/entity"
+	"lot/internal/entity"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -21,7 +21,6 @@ func (m *MockRoleRepository) Find() []entity.Role {
 }
 
 func (m *MockRoleRepository) FindUserRoleByName(name string) (*entity.Role, error) {
-	args := m.Called()
+	args := m.Called(name)
 	return args.Get(0).(*entity.Role), args.Error(1)
 }
-

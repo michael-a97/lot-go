@@ -8,7 +8,7 @@ import (
 	"lot/api/dto"
 	"lot/config"
 	"lot/internal/entity"
-	app_errors "lot/internal/errors"
+	"lot/internal/errors"
 	"lot/internal/repository"
 	"lot/internal/utilities"
 	"time"
@@ -28,13 +28,13 @@ type AuthService interface {
 	VerifyPhoneNumberAuthenticationToken(token string) (bool, error)
 	ResetPassword(request dto.PasswordResetRequest) error
 	ChangePassword(request dto.ChangePasswordRequest, user entity.User) error
-	GetUserFromAccessToken(accesToken string) (*entity.User, error)
+	GetUserFromAccessToken(accessToken string) (*entity.User, error)
 }
 
 type authService struct {
-	userRepository  repository.UserRepository
-	authRepository  repository.AuthRepository
-	smsTokenVerfier SmsTokenVerifier
+	userRepository   repository.UserRepository
+	authRepository   repository.AuthRepository
+	smsTokenVerifier SmsTokenVerifier
 }
 
 func (a authService) SignIn(request dto.LoginRequest) (*dto.AuthenticationResponse, error) {
@@ -143,7 +143,7 @@ func (a authService) RefreshToken(request dto.TokenRefreshRequest) (*dto.Authent
 }
 
 func (a authService) VerifyPhoneNumberAuthenticationToken(token string) (bool, error) {
-	valid, err := a.smsTokenVerfier.IsTokenValid(token)
+	valid, err := a.smsTokenVerifier.IsTokenValid(token)
 	if err != nil {
 		return false, err
 	}
@@ -205,9 +205,9 @@ func NewAuthService(
 	smsTokenVerifier SmsTokenVerifier,
 ) AuthService {
 	return &authService{
-		userRepository:  userRepository,
-		authRepository:  authRepository,
-		smsTokenVerfier: smsTokenVerifier,
+		userRepository:   userRepository,
+		authRepository:   authRepository,
+		smsTokenVerifier: smsTokenVerifier,
 	}
 }
 

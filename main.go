@@ -21,14 +21,14 @@ func main() {
 	}
 	db := database.ConnectDb()
 
-	firebaseApp, err := firebaseApp.ConnectFirebaseApp()
+	lotFirebaseApp, err := firebaseApp.ConnectFirebaseApp()
 	if err != nil {
-		log.Fatal("coun't connect firebase " + err.Error())
+		log.Fatal("couldn't connect firebase " + err.Error())
 	}
 
-	firebaseAuthClient, err := firebaseApp.Auth(context.Background())
+	firebaseAuthClient, err := lotFirebaseApp.Auth(context.Background())
 	if err != nil {
-		log.Fatal("coun't connect firebase " + err.Error())
+		log.Fatal("couldn't connect firebase " + err.Error())
 	}
 
 	app := fiber.New(fiber.Config{AppName: "lot"})

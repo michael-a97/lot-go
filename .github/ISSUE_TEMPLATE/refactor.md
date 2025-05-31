@@ -7,4 +7,4 @@ labels: refactor
 
 **Description**
 
-Clearly describe what needs to be refactored any why. Please provide links to related issues (bugs or upcoming features) in order to help prioritize.
+Clearly describe what needs to be refactored any why. Please provide links to related issues (bugs or upcoming features) to help prioritize.

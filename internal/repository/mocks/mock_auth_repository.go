@@ -17,6 +17,6 @@ func (mockAuthRepository *MockAuthRepository) RevokeAllRefreshTokensForUser(user
 }
 
 func (mockAuthRepository *MockAuthRepository) IsValidRefreshToken(token string, userId uint) (bool, error) {
-	args := mockAuthRepository.Called(userId)
+	args := mockAuthRepository.Called(token, userId)
 	return args.Bool(0), args.Error(1)
 }

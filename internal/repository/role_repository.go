@@ -2,7 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	entity "lot/internal/entity"
+	"lot/internal/entity"
 	errors "lot/internal/errors"
 )
 

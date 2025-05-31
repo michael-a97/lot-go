@@ -3,7 +3,7 @@ package handler
 import (
 	"lot/api/dto"
 	"lot/internal/entity"
-	app_errors "lot/internal/errors"
+	"lot/internal/errors"
 	"lot/internal/service"
 	"strings"
 
