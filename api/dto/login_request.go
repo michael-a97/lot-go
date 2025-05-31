@@ -16,7 +16,7 @@ func (request LoginRequest) Validate() error {
 		),
 		validation.Field(
 			&request.PhoneNumber,
-			validation.Required.Error("phonenumber is required"),
+			validation.Required.Error("phone number is required"),
 		),
 	)
 }

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"lot/api/dto"
 	"lot/internal/entity"
-	app_errors "lot/internal/errors"
+	"lot/internal/errors"
 	"lot/internal/repository"
 	"lot/internal/utilities"
 )
@@ -34,7 +34,7 @@ func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
 		return nil, errors.New("role not found")
 	}
 
-	if _, err := u.userRepository.FindByPhoneNumber(request.PhoneNumber); err != app_errors.ErrRecordNotFound {
+	if _, err := u.userRepository.FindByPhoneNumber(request.PhoneNumber); !errors.Is(err, app_errors.ErrRecordNotFound) {
 		return nil, errors.New("an account with that phone number already exists")
 	}
 

@@ -23,7 +23,7 @@
 </div>
 
 Lot is a system targeted at making finding parking spaces easier for users and managing parking spaces easier
-for parking space owners & attendants. The app is built with flutter and currently supports the iOS and Android
+for parking space owners and attendants. The app is built with flutter and currently supports the iOS and Android
 platforms.
 <br/>
 <hr/>

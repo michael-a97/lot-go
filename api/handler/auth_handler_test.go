@@ -6,7 +6,7 @@ import (
 	"errors"
 	"lot/api/dto"
 	"lot/internal/entity"
-	app_errors "lot/internal/errors"
+	"lot/internal/errors"
 	"lot/internal/service/mocks"
 	"net/http"
 	"net/http/httptest"
@@ -125,7 +125,7 @@ func TestChangePasswordHandler(t *testing.T) {
 	path := "/change-password"
 
 	t.Run("should return a 400 response when request body is invalid", func(t *testing.T) {
-		
+
 		app := fiber.New()
 		mockAuthService := new(mocks.MockAuthService)
 		requestBody := fiber.Map{}
@@ -147,7 +147,6 @@ func TestChangePasswordHandler(t *testing.T) {
 		requestBody := dto.ChangePasswordRequest{
 			NewPassword: "1234",
 		}
-
 
 		app.Post(path, ResetPasswordHandler(mockAuthService))
 

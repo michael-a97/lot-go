@@ -22,7 +22,7 @@ YES | NO
 
 ## Related Issues
 
-<!-- Attach list of issues related to this PR here -->
+<!-- Attach a list of issues related to this PR here -->
 
 ## Type of Change
 

@@ -12,23 +12,23 @@ import (
 func ConnectDb() *gorm.DB {
 	dbUserName, err := config.Config("dbUsername")
 	if err != nil {
-		log.Fatal("Please sepecify a `dbUsername`")
+		log.Fatal("Please specify a `dbUsername`")
 	}
 	dbPassword, err := config.Config("dbPassword")
 	if err != nil {
-		log.Fatal("Please sepecify a `dbPassword`")
+		log.Fatal("Please specify a `dbPassword`")
 	}
 	host, err := config.Config("host")
 	if err != nil {
-		log.Fatal("Please sepecify a `host`")
+		log.Fatal("Please specify a `host`")
 	}
 	dbPort, err := config.Config("dbPort")
 	if err != nil {
-		log.Fatal("Please sepecify a `dbPort`")
+		log.Fatal("Please specify a `dbPort`")
 	}
 	dbName, err := config.Config("dbName")
 	if err != nil {
-		log.Fatal("Please sepecify a `dbName`")
+		log.Fatal("Please specify a `dbName`")
 	}
 
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",

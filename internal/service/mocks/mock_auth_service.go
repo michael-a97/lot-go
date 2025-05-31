@@ -36,7 +36,7 @@ func (m *MockAuthService) ChangePassword(request dto.ChangePasswordRequest, user
 	return args.Error(0)
 }
 
-func (m *MockAuthService) GetUserFromAccessToken(accesToken string) (*entity.User, error) {
-	args := m.Called(accesToken)
+func (m *MockAuthService) GetUserFromAccessToken(accessToken string) (*entity.User, error) {
+	args := m.Called(accessToken)
 	return args.Get(0).(*entity.User), args.Error(1)
 }
