@@ -1,9 +1,11 @@
 package route
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"lot/api/handler"
+	"lot/api/middleware"
 	"lot/internal/service"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func SetupUserRoutes(
@@ -12,4 +14,9 @@ func SetupUserRoutes(
 	authService service.AuthService,
 ) {
 	router.Post("/signup", handler.SignUpHandler(userService, authService))
+	router.Get("/me",
+		middleware.ProtectedMiddleware(),
+		middleware.AuthenticationMiddleware(authService),
+		handler.FindUserHandler(userService),
+	)
 }

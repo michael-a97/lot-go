@@ -2,6 +2,7 @@ package handler
 
 import (
 	"lot/api/dto"
+	"lot/internal/entity"
 	"lot/internal/errors"
 	"lot/internal/service"
 	"strings"
@@ -58,6 +59,31 @@ func SignUpHandler(userService service.UserService, authService service.AuthServ
 		return c.JSON(
 			dto.ApiResponse{
 				Data: user, Status: 200, Message: "Success",
+			},
+		)
+	}
+}
+
+func FindUserHandler(userService service.UserService) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*entity.User)
+
+		userDto, err := userService.FindUserById(user.ID)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				dto.ApiResponse{
+					Status: fiber.StatusInternalServerError,
+					Error:  err.Error(),
+					Data:   nil,
+				},
+			)
+		}
+
+		return c.JSON(
+			dto.ApiResponse{
+				Status:  fiber.StatusOK,
+				Message: "Success",
+				Data:    userDto,
 			},
 		)
 	}

@@ -26,6 +26,7 @@ func NewUserService(
 
 type UserService interface {
 	SignUp(request dto.SignUpRequest) (*dto.UserDto, error)
+	FindUserById(id uint) (*dto.UserDto, error)
 }
 
 func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
@@ -58,6 +59,14 @@ func (u userService) SignUp(request dto.SignUpRequest) (*dto.UserDto, error) {
 	}
 
 	return toDto(*savedUser), nil
+}
+
+func (u userService) FindUserById(id uint) (*dto.UserDto, error) {
+	user, err := u.userRepository.FindById(id)
+	if err != nil {
+		return nil, err
+	}
+	return toDto(*user), nil
 }
 
 func toDto(user entity.User) *dto.UserDto {

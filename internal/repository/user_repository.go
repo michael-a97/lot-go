@@ -51,7 +51,6 @@ func (u userRepository) Update(user entity.User) (*entity.User, error) {
 }
 
 
-
 func (u userRepository) Delete(user entity.User) error {
 	result := u.DB.Delete(&user)
 	if result.Error != nil {
