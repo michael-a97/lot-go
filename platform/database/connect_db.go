@@ -2,11 +2,13 @@ package database
 
 import (
 	"fmt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"lot/config"
 	"lot/internal/entity"
+	"net/url"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func ConnectDb() *gorm.DB {
@@ -33,7 +35,7 @@ func ConnectDb() *gorm.DB {
 
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
 		dbUserName,
-		dbPassword,
+		url.QueryEscape(dbPassword),
 		host,
 		dbPort,
 		dbName,
